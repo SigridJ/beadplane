@@ -57,10 +57,10 @@ The bead files does not yet support comments.
 
 ## Examples
 By running `python3 beadplane.py examples/aztec-wave.bead` the following image is produced.
-<img src="aztec-wave.svg" alt="Aztec Wave bead plane" width="400"/>
+<img src=".media/aztec-wave.svg" alt="Aztec Wave bead plane" width="400"/>
 
 By running `python3 beadplane.py -d examples/aztec-wave.bead` the following image is produced.
-<img src="aztec-wave-diagram.svg" alt="Aztec Wave bead crochet diagram" width="200"/>
+<img src=".media/aztec-wave-diagram.svg" alt="Aztec Wave bead crochet diagram" width="200"/>
 
 ## Dependencies
 * `Python3` and its standard libraries
