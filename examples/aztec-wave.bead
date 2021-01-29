@@ -1,0 +1,5 @@
+around = 7
+color b = black
+color p = pink
+1b 1p 2b 1p 1b 3p 3b
+1p 1b 2p 1b 1p 3b 3p
