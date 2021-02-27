@@ -1,3 +1,4 @@
+import sys
 import argparse
 import re
 
@@ -51,14 +52,18 @@ def makeImage(colorMatrix, diagram):
     else:
         diagramStr = ''
     with open(filename[:filename.find('.')]+diagramStr+'.svg', 'w+') as image:
-        image.write(f"<svg viewBox=\"-0.015 {(-1)*len(colorMatrix) -0.015} {len(colorMatrix[0]) + 0.03} {(len(colorMatrix) + 0.03)}\" xmlns=\"http://www.w3.org/2000/svg\">\n")
+        image.write(f"<svg viewBox=\"-0.015 {(-1)*(len(colorMatrix)-1)*0.866025405 -1.015} {len(colorMatrix[0]) + 0.03} {((len(colorMatrix)-1)*0.866025405 + 1.03)}\"  xmlns=\"http://www.w3.org/2000/svg\">\n")
         for i in range(len(colorMatrix)):
             for j in range(len(colorMatrix[i])):
                 if i % 2 == 0:
                     odd = 0
                 else:
                     odd = 0.5
-                image.write(f"<circle cx=\"{0.5 + j + odd}\" cy=\"{-0.5 - 0.866025404*i}\" r=\"0.5\" fill=\"{colors[colorMatrix[i][j]]}\" stroke=\"black\" stroke-width=\"0.03\"/>\n")
+                try:
+                    image.write(f"<circle cx=\"{0.5 + j + odd}\" cy=\"{-0.5 - 0.866025404*i}\" r=\"0.5\" fill=\"{colors[colorMatrix[i][j]]}\" stroke=\"black\" stroke-width=\"0.03\"/>\n")
+                except KeyError:
+                    print("Error: Color code in pattern lines not recognized")
+                    sys.exit()
         image.write(f"</svg>")
 
 def makePlane():
@@ -99,8 +104,9 @@ with open(args.patternfile) as file:
         if 'around' in line:
             try:
                 around = int(re.search(r'\d+', line).group())
-            except NoneType:
-                print(f'No \'around\' value in {file.name}')
+            except AttributeError:
+                print(f'Error: No \'around\' value in {file.name}')
+                sys.exit()
         # Color
         elif 'color' in line:
             name = line[5:(line.find('='))].strip(' ')
