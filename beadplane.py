@@ -1,7 +1,7 @@
 import sys
 import argparse
 import re
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 # Parser
 parser = argparse.ArgumentParser(description='Create an SVG file containing a bead plane of a bead crochet bracelet pattern written in a .bead file')
@@ -14,8 +14,12 @@ parser.add_argument('-H', '--height', type=int, metavar='N', default=0, help="cu
 args = parser.parse_args()
 
 
-def getSize() -> Tuple[int, int]:
+def getSize(around: int) -> Tuple[int, int]:
     """Determines plane size
+
+    Parameters
+    ----------
+    around : int
 
     Returns
     -------
@@ -35,13 +39,19 @@ def getSize() -> Tuple[int, int]:
     return rowLength, rowNumber
 
 
-def getPlaneMatrix(rowLength: int, rowNumber: int) -> List[List[str]]:
+def getPlaneMatrix(
+        rowLength: int,
+        rowNumber: int,
+        around: int,
+        pattern: List[str]) -> List[List[str]]:
     """Makes a plane matrix of color codes
 
     Parameters
     ----------
     rowLength : int
     rowNumber : int
+    around: int
+    pattern : List[str]
 
     Returns
     -------
@@ -58,13 +68,19 @@ def getPlaneMatrix(rowLength: int, rowNumber: int) -> List[List[str]]:
     return colorMatrix
 
 
-def makeImage(colorMatrix: List[List[str]], diagram: bool) -> None:
+def makeImage(
+        filename: str,
+        colorMatrix: List[List[str]],
+        colors: Dict[str, str],
+        diagram: Optional[bool] = False) -> None:
     """Makes SVG image from color matrix
 
     Parameters
     ----------
+    filename : str
     colorMatrix : List[List[str]]
-    diagram : bool
+    colors : Dict[str, str]
+    diagram : Optional[bool]
     """
     diagramStr = ''
     if diagram:
@@ -82,15 +98,32 @@ def makeImage(colorMatrix: List[List[str]], diagram: bool) -> None:
         image.write(f"</svg>")
 
 
-def makePlane() -> None:
-    """Makes a plane"""
-    rowLength, rowNumber = getSize()
-    colorMatrix = getPlaneMatrix(rowLength, rowNumber)
-    makeImage(colorMatrix, False)
+def makePlane(
+        filename: str,
+        around: int,
+        pattern: List[str],
+        colors: Dict[str, str]) -> None:
+    """Makes a plane
+
+    Parameters
+    ----------
+    filename : str
+    around : int
+    pattern : List[str]
+    colors : Dict[str, str]
+    """
+    rowLength, rowNumber = getSize(around)
+    colorMatrix = getPlaneMatrix(rowLength, rowNumber, around, pattern)
+    makeImage(filename, colorMatrix, colors)
 
 
-def makeDiagramMatrix() -> List[List[str]]:
+def makeDiagramMatrix(around: int, pattern: List[str]) -> List[List[str]]:
     """Makes a diagram matrix of color codes
+
+    Parameters
+    ----------
+    around : int
+    pattern : List[str]
 
     Returns
     -------
@@ -110,14 +143,37 @@ def makeDiagramMatrix() -> List[List[str]]:
         even = 0 if i % 2 == 0 else 1
     return colorMatrix
 
-def makeDiagram() -> None:
-    """Makes a diagram"""
-    colorMatrix = makeDiagramMatrix()
-    makeImage(colorMatrix, True)
+
+def makeDiagram(
+        filename: str,
+        around: int,
+        pattern: List[str],
+        colors: Dict[str, str]) -> None:
+    """Makes a diagram
+
+    Parameters
+    ----------
+    filename : str
+    around : int
+    pattern : List[str]
+    colors : Dict[str, str]
+    """
+    colorMatrix = makeDiagramMatrix(around, pattern)
+    makeImage(filename, colorMatrix, colors, True)
 
 
-if __name__ == '__main__':
-    with open(args.patternfile) as file:
+def loadData(beadFile: str) -> Dict[str, Any]:
+    """Loads data from .bead file
+
+    Parameters
+    ----------
+    beadFile : str
+
+    Returns
+    -------
+    data : Dict[str, Any]
+    """
+    with open(beadFile) as file:
         filename = file.name
         pattern: List[str] = []
         colors: Dict[str, str] = {}
@@ -138,11 +194,22 @@ if __name__ == '__main__':
                 for c in line.split(' '):
                     for i in range(int(re.search(r'\d+', c).group())):  # type: ignore
                         pattern.append(re.search(r'[a-zA-Z]+', c).group())  # type: ignore
+    data = {
+        'filename': filename,
+        'around': around,
+        'pattern': pattern,
+        'colors': colors
+    }
+    return data
+
+
+if __name__ == '__main__':
+    data = loadData(args.patternfile)
 
     # Decide which images to produce
     if args.diagram:
-        makeDiagram()
+        makeDiagram(**data)
         if args.plane:
-            makePlane()
+            makePlane(**data)
     else:
-        makePlane()
+        makePlane(**data)
