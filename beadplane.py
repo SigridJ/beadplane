@@ -60,7 +60,7 @@ def makeImage(colorMatrix, diagram):
                 else:
                     odd = 0.5
                 try:
-                    image.write(f"<circle cx=\"{0.5 + j + odd}\" cy=\"{-0.5 - 0.866025404*i}\" r=\"0.5\" fill=\"{colors[colorMatrix[i][j]]}\" stroke=\"black\" stroke-width=\"0.03\"/>\n")
+                    image.write(f"<circle cx=\"{0.5 + j + odd}\" cy=\"{-0.5 - 0.866025404*i}\" r=\"0.5\" fill=\"{colors[colorMatrix[i][j]]}\" stroke=\"black\" stroke-width=\"0.01\"/>\n")
                 except KeyError:
                     print("Error: Color code in pattern lines not recognized")
                     sys.exit()

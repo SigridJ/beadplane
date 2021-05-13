@@ -1,0 +1,7 @@
+around = 7
+color b = #45e2e4
+color s = #1d1e3a
+color r = #ff4e60
+5b 3r 4b 4r 3b
+5r 3s 4r 4s 3r
+5s 3b 4s 4b 3s
