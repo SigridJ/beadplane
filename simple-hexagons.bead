@@ -1,0 +1,5 @@
+around = 4
+color r = firebrick
+color b = dodgerblue
+color o = coral
+2r 1b 1r 2o 2r 3b 1r 1o 1r 1b 3r 1b

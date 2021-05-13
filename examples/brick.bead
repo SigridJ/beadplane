@@ -1,0 +1,10 @@
+around = 7
+color r = teal
+color b = white
+color g = khaki
+3b 1r 2b 1r
+3b 1r 2b
+8r 2g
+1r 3g 1r 2g
+1r 3g 1r 2g
+8r 2b 1r

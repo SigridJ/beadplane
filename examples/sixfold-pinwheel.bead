@@ -1,0 +1,5 @@
+around = 6
+color w = white
+color b = blue
+color r = red
+3w 1b 3w 2r 2b 3w 2r 1b 2r 1w 3b 2r 1w 2b 1r 2b 3w 2r 2b 3w 1r 1w

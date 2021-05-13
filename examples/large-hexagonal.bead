@@ -1,0 +1,7 @@
+around = 7
+color c = yellowgreen
+color o = black
+color d = darkslategrey
+5c 3o 4c 4o 3c
+5o 3d 4o 4d 3o
+5d 3c 4d 4c 3d

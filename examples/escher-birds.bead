@@ -1,0 +1,10 @@
+around = 10
+color b = midnightblue
+color r = red
+color l = yellowgreen
+color t = turquoise
+color w = seashell
+2l 1b 8r 1l 1b 8r 1l 1b 1w 2b 2r 1l 2r 2l 2b
+2t 1r 8l 1t 1r 8l 1t 1r 1w 2r 2l 1t 2l 2t 2r
+2b 1l 8t 1b 1l 8t 1b 1l 1w 2l 2t 1b 2t 2b 2l
+2r 1t 8b 1r 1t 8b 1r 1t 1w 2t 2b 1r 2b 2r 2t
