@@ -1,0 +1,10 @@
+around = 7
+color b = lightseagreen
+color r = mediumturquoise
+color g = paleturquoise
+color w = white
+3w 1r 1g 1b 1r 1b
+3r 1g 1b 1r 1g 1b
+3g 1b 1r 1g 1w 4b
+1r 1g 1w 5r 1g 1w 1b
+5g 1w 1r 1b 2w

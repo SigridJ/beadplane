@@ -1,0 +1,10 @@
+around = 7
+color b = black
+color r = red
+color g = green
+1b 1r 1b 1g 1b 3r
+1b 1r 3b 2g
+1g 1b 3r 4b
+1r 2g 1r 1b 1r
+1b 1r 2g 1r 1b 1r 1g
+1b 3r 1b 1r 1g 3b

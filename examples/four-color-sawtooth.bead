@@ -1,0 +1,8 @@
+around = 7
+color b = black
+color l = orange
+color g = red
+color r = maroon
+3b 1l 1g 3r
+2b 2l 3g 1r
+1b 3l 2g 2r

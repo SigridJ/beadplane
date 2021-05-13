@@ -1,0 +1,5 @@
+around = 6
+color b = lightblue
+color w = white
+color s = black
+1b 5s 1b 1w 1s 3w 1b 2w 1s 2w 1b 3w 1s 1w

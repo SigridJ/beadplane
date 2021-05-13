@@ -1,0 +1,7 @@
+around = 7
+color w = black
+color g = orange
+1g 2w 1g 6w 2g 3w
+7g 1w 6g 2w
+5g 2w 6g 1w
+7g 3w 2g 6w

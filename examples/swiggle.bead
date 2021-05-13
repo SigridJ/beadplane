@@ -1,0 +1,16 @@
+around = 10
+color w = white
+color g = green
+color r = red
+color y = yellow
+2w 1g 1y 1r 8w
+1r 1y 6r 2w
+1r 1g 6y 1r 1w
+1r 1y 2g 1r 3g
+1y 2r 1y 1g 1y 1r
+3w 1g 1y 1r 1y 1g 1y 1r
+4w 1g 2y 1g 1y 1r
+5w 1g 1y 1g 1y 4r
+3w 2g 5y 1r
+4w 5g 1y 1r
+8w 1g 1y 1r 6w
