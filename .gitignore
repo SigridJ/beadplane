@@ -1,2 +1,11 @@
 # Ignore SVG files
 *.svg
+
+# Environment
+venv/
+
+# Python
+__pycache__/
+
+# Vim
+*.swp

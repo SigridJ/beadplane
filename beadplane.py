@@ -1,6 +1,7 @@
 import sys
 import argparse
 import re
+from typing import Any, Dict, List, Optional, Tuple
 
 # Parser
 parser = argparse.ArgumentParser(description='Create an SVG file containing a bead plane of a bead crochet bracelet pattern written in a .bead file')
@@ -12,53 +13,83 @@ parser.add_argument('-w', '--width', type=int, metavar='N', default=0, help="cus
 parser.add_argument('-H', '--height', type=int, metavar='N', default=0, help="custom height in number of beads")
 args = parser.parse_args()
 
-# Determine plane size
-def getSize():
+
+def getSize(around: int) -> Tuple[int, int]:
+    """Determines plane size
+
+    Parameters
+    ----------
+    around : int
+
+    Returns
+    -------
+    rowLength : int
+    rowNumber : int
+    """
+    rowLength: int = 6 * around
     if args.size == 'small':
         rowLength = 3 * around
     elif args.size == 'medium':
         rowLength = 24
-    else:
-        rowLength = 6 * around
-    rowNumber = int(round((2*rowLength - 2)/1.732050808 + 1))
+    rowNumber: int = int(round((2*rowLength - 2)/1.732050808 + 1))
     if args.width > 0:
         rowLength = args.width
     if args.height > 0:
         rowNumber = args.height
     return rowLength, rowNumber
 
-# Make plane matrix of color codes
-def getPlaneMatrix(rowLength, rowNumber):
-    colorMatrix = []
+
+def getPlaneMatrix(
+        rowLength: int,
+        rowNumber: int,
+        around: int,
+        pattern: List[str]) -> List[List[str]]:
+    """Makes a plane matrix of color codes
+
+    Parameters
+    ----------
+    rowLength : int
+    rowNumber : int
+    around: int
+    pattern : List[str]
+
+    Returns
+    -------
+    colorMatrix : List[List[str]]
+    """
+    colorMatrix: List[List[str]] = []
     patternCounter = 0
     odd = 0
     for i in range(rowNumber):
-        row = []
-        for j in range(rowLength + odd):
-            row.append(pattern[(patternCounter + j) % len(pattern)])
+        row = [pattern[(patternCounter + j) % len(pattern)] for j in range(rowLength + odd)]
         colorMatrix.append(row)
-        if i % 2 == 0:
-            odd = -1
-            patternCounter = (patternCounter + around + 1) % len(pattern)
-        else:
-            odd = 0
-            patternCounter = (patternCounter + around) % len(pattern)
+        odd = -1 if i % 2 == 0 else 0
+        patternCounter = (patternCounter + around - odd) % len(pattern)
     return colorMatrix
 
-# Make SVG image from color matrix
-def makeImage(colorMatrix, diagram):
+
+def makeImage(
+        filename: str,
+        colorMatrix: List[List[str]],
+        colors: Dict[str, str],
+        diagram: Optional[bool] = False) -> None:
+    """Makes SVG image from color matrix
+
+    Parameters
+    ----------
+    filename : str
+    colorMatrix : List[List[str]]
+    colors : Dict[str, str]
+    diagram : Optional[bool]
+    """
+    diagramStr = ''
     if diagram:
         diagramStr = '-diagram'
-    else:
-        diagramStr = ''
-    with open(filename[:filename.find('.')]+diagramStr+'.svg', 'w+') as image:
+    with open(filename[:filename.find('.')] + diagramStr + '.svg', 'w+') as image:
         image.write(f"<svg viewBox=\"-0.015 {(-1)*(len(colorMatrix)-1)*0.866025405 -1.015} {len(colorMatrix[0]) + 0.03} {((len(colorMatrix)-1)*0.866025405 + 1.03)}\"  xmlns=\"http://www.w3.org/2000/svg\">\n")
         for i in range(len(colorMatrix)):
             for j in range(len(colorMatrix[i])):
-                if i % 2 == 0:
-                    odd = 0
-                else:
-                    odd = 0.5
+                odd = 0 if i % 2 == 0 else 0.5
                 try:
                     image.write(f"<circle cx=\"{0.5 + j + odd}\" cy=\"{-0.5 - 0.866025404*i}\" r=\"0.5\" fill=\"{colors[colorMatrix[i][j]]}\" stroke=\"black\" stroke-width=\"0.01\"/>\n")
                 except KeyError:
@@ -66,61 +97,119 @@ def makeImage(colorMatrix, diagram):
                     sys.exit()
         image.write(f"</svg>")
 
-def makePlane():
-    rowLength, rowNumber = getSize()
-    colorMatrix = getPlaneMatrix(rowLength, rowNumber)
-    makeImage(colorMatrix, False)
 
-# Make diagram matrix of color codes
-def makeDiagramMatrix():
-    colorMatrix = []
+def makePlane(
+        filename: str,
+        around: int,
+        pattern: List[str],
+        colors: Dict[str, str]) -> None:
+    """Makes a plane
+
+    Parameters
+    ----------
+    filename : str
+    around : int
+    pattern : List[str]
+    colors : Dict[str, str]
+    """
+    rowLength, rowNumber = getSize(around)
+    colorMatrix = getPlaneMatrix(rowLength, rowNumber, around, pattern)
+    makeImage(filename, colorMatrix, colors)
+
+
+def makeDiagramMatrix(around: int, pattern: List[str]) -> List[List[str]]:
+    """Makes a diagram matrix of color codes
+
+    Parameters
+    ----------
+    around : int
+    pattern : List[str]
+
+    Returns
+    -------
+    colorMatrix : List[List[str]]
+    """
+    colorMatrix: List[List[str]] = []
     patternCounter = 0
     even = 1
     for i in range(int(len(pattern) / (around + 0.5)) + 1):
-        row = []
+        row: List[str] = []
         for j in range(around + even):
             row.append(pattern[patternCounter])
             patternCounter += 1
             if patternCounter >= len(pattern):
                 break
         colorMatrix.append(row)
-        if i % 2 == 0:
-            even = 0
-        else:
-            even = 1
+        even = 0 if i % 2 == 0 else 1
     return colorMatrix
 
-def makeDiagram():
-    colorMatrix = makeDiagramMatrix()
-    makeImage(colorMatrix, True)
 
-# Read file
-with open(args.patternfile) as file:
-    filename = file.name
-    pattern = []
-    colors = {}
-    lines = file.readlines()
-    for line in lines:
-        if 'around' in line:
-            try:
-                around = int(re.search(r'\d+', line).group())
-            except AttributeError:
-                print(f'Error: No \'around\' value in {file.name}')
-                sys.exit()
-        # Color
-        elif 'color' in line:
-            name = line[5:(line.find('='))].strip(' ')
-            color = line[line.find('=')+1:].strip(' ')
-            colors[name] = color
-        elif '=' not in line:
-            for c in line.split(' '):
-                for i in range(int(re.search(r'\d+', c).group())):
-                    pattern.append(re.search(r'[a-zA-Z]+', c).group())
+def makeDiagram(
+        filename: str,
+        around: int,
+        pattern: List[str],
+        colors: Dict[str, str]) -> None:
+    """Makes a diagram
 
-# Decide which images to produce
-if args.diagram:
-    makeDiagram()
-    if args.plane:
-        makePlane()
-else:
-    makePlane()
+    Parameters
+    ----------
+    filename : str
+    around : int
+    pattern : List[str]
+    colors : Dict[str, str]
+    """
+    colorMatrix = makeDiagramMatrix(around, pattern)
+    makeImage(filename, colorMatrix, colors, True)
+
+
+def loadData(beadFile: str) -> Dict[str, Any]:
+    """Loads data from .bead file
+
+    Parameters
+    ----------
+    beadFile : str
+
+    Returns
+    -------
+    data : Dict[str, Any]
+    """
+    with open(beadFile) as file:
+        filename = file.name
+        pattern: List[str] = []
+        colors: Dict[str, str] = {}
+        lines = file.readlines()
+        for line in lines:
+            if 'around' in line:
+                try:
+                    around = int(re.search(r'\d+', line).group())  # type: ignore
+                except AttributeError:
+                    print(f'Error: No \'around\' value in {file.name}')
+                    sys.exit()
+            # Color
+            elif 'color' in line:
+                name = line[5:(line.find('='))].strip(' ')
+                color = line[line.find('=')+1:].strip(' ')
+                colors[name] = color
+            elif '=' not in line:
+                for c in line.split(' '):
+                    for i in range(int(re.search(r'\d+', c).group())):  # type: ignore
+                        pattern.append(re.search(r'[a-zA-Z]+', c).group())  # type: ignore
+    data = {
+        'filename': filename,
+        'around': around,
+        'pattern': pattern,
+        'colors': colors
+    }
+    return data
+
+
+if __name__ == '__main__':
+    data = loadData(args.patternfile)
+
+    # Decide which images to produce
+    if args.diagram:
+        makeDiagram(**data)
+        if args.plane:
+            makePlane(**data)
+    else:
+        makePlane(**data)
